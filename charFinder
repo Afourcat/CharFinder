@@ -5,8 +5,9 @@ import tensorflow as tf
 import binascii
 from random import randrange
 
-nb_answers = 10
-nb_test = 300
+nb_answers = 2
+nb_test = 2500
+grad_value = 0.1
 alphabet = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 def main():
@@ -15,7 +16,7 @@ def main():
     W = tf.Variable(tf.zeros([8, 26]))
     b = tf.Variable(tf.zeros([26]))
 
-# place older of result
+# place holder of result
     y = tf.nn.softmax(tf.matmul(x, W) + b)
 
 # place holder of correct answers
@@ -25,7 +26,7 @@ def main():
     cross_entropy = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y), reduction_indices=[1]))
 
 # train algorithm
-    train_step = tf.train.GradientDescentOptimizer(0.2).minimize(cross_entropy)
+    train_step = tf.train.GradientDescentOptimizer(grad_value).minimize(cross_entropy)
 
     sess = tf.InteractiveSession()
 
@@ -33,7 +34,9 @@ def main():
 
     for _ in range(nb_test):
         batch_x, batch_y = get_training()
-        sess.run(train_step, feed_dict={x: batch_x, y_: batch_y})
+        print ("Waited : \n%s" % batch_y)
+        _, y_val = sess.run([train_step, y], feed_dict={x: batch_x, y_: batch_y})
+        print ("Result = \n%s" % y_val)
 
 #test trained model
     #prediction test
